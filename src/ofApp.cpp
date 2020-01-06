@@ -24,6 +24,10 @@ void ofApp::setup(){
 
 	client.connect("127.0.0.1",3000);
 	client.addListener(this);
+
+	soundStream.printDeviceList();
+	int bufferSize = 256;
+	soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 }
 
 //--------------------------------------------------------------
@@ -49,7 +53,13 @@ void ofApp::draw(){
 
 	_scene[_stage]->draw();
 
+	ofSetColor(255,255,0);
+	ofDrawCircle(200,200,2000*smoothedVol);
+
 	ofPopMatrix();
+
+	
+	
 
 #ifdef DRAW_DEBUG_INFO
 	ofPushStyle();
@@ -149,4 +159,30 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 //--------------------------------------------------------------
 void ofApp::onBroadcast( ofxLibwebsockets::Event& args ){
     cout<<"[ws] got broadcast "<<args.message<<endl;
+}
+void ofApp::audioIn(float * input, int bufferSize, int nChannels){	
+	
+	float curVol = 0.0;
+	
+	// samples are "interleaved"
+	int numCounted = 0;	
+
+	//lets go through each sample and calculate the root mean square which is a rough way to calculate volume	
+	for (int i = 0; i < bufferSize; i++){
+		curVol += (input[i*2]*0.5)*(input[i*2]*0.5);
+		curVol += (input[i*2+1]*0.5)*(input[i*2+1]*0.5);
+		numCounted+=2;
+	}
+	
+	//this is how we get the mean of rms :) 
+	curVol /= (float)numCounted;
+	
+	// this is how we get the root of rms :) 
+	curVol = sqrt( curVol );
+	
+	smoothedVol *= 0.93;
+	smoothedVol += 0.07 * curVol;
+	
+	//bufferCounter++;
+	
 }

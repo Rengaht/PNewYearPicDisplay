@@ -50,5 +50,9 @@ class ofApp : public ofBaseApp{
 		//midnight::websocket::Client _ws_client;
 		
 		string _text_wish;
+
+		ofSoundStream soundStream;
+		void audioIn(float * input, int bufferSize, int nChannels); 
+		float smoothedVol;
 		
 };
