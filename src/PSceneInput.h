@@ -5,27 +5,26 @@
 #include "PSceneBase.h"
 
 class PSceneInput:public PSceneBase{
-	ofImage _img_back;
+	ofImage _img_hint;
 public:
 	PSceneInput(ofApp* set_):PSceneBase(set_){
-		_order_scene=1;
+		_order_scene=2;
 		_mlayer=2;
 
-		_img_back.loadImage("img/test-2.png");
+		_img_hint.loadImage("img/hint_text.png");
 
 		setup();
 	}
 	void drawLayer(int i){
 		switch(i){
 			case 0:
-				ofPushStyle();
-				ofSetColor(255);
-					ofDrawRectangle(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
-					_img_back.draw(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
-				ofPopStyle();
+				// draw wave
+
+				// draw text
+				_ptr_app->_textgroup.draw();
 				break;
 			case 1:
-				ofDrawBitmapString("Scene "+ofToString(_order_scene),0,10);
+				_img_hint.draw(GlobalParam::GetInstance()->FrameSize.x/2-_img_hint.getWidth()/2,ofGetHeight()-MARGIN_BOTTOM-_img_hint.getHeight());
 				break;
 			default:
 				break;
@@ -33,6 +32,7 @@ public:
 	}
 	void update(float dt_){
 		PSceneBase::update(dt_);
+		_ptr_app->_textgroup.update(dt_);
 	}
 	void init(){
 		PSceneBase::init();

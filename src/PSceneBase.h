@@ -7,6 +7,7 @@
 
 #define EASE_DUE 500
 #define EASE_OFFSET 300
+#define MARGIN_BOTTOM 20
 
 #include "PParameter.h"
 

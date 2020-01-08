@@ -1,3 +1,4 @@
+ofxDSHapVideoPlayer
 ofxHapPlayer
 ofxHttpUtils
 ofxJSON

@@ -1,7 +1,10 @@
 #include "ofApp.h"
 #include "PSceneSleep.h"
+#include "PSceneHint.h"
 #include "PSceneInput.h"
 #include "PSceneResult.h"
+
+ofxTrueTypeFontUC PCharacter::Font;
 
 
 //--------------------------------------------------------------
@@ -19,12 +22,14 @@ void ofApp::setup(){
 
 	ofAddListener(PSceneBase::sceneInFinish,this,&ofApp::onSceneInFinish);
 	ofAddListener(PSceneBase::sceneOutFinish,this,&ofApp::onSceneOutFinish);
-
+	
 	_millis_now=ofGetElapsedTimeMillis();
 
 	client.connect("127.0.0.1",3000);
 	client.addListener(this);
 
+
+	
 	soundStream.printDeviceList();
 	int bufferSize = 256;
 	soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
@@ -38,23 +43,41 @@ void ofApp::update(){
 
 	_scene[_stage]->update(dt_);
 
+	
+	while(_string_to_update.size()>0){
+		
+		_textgroup.updateText(_string_to_update.front());
+		_string_to_update.pop_front();
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 	
+	//ofEnableAlphaBlending();
+
 	ofPushMatrix();
 	ofTranslate(GlobalParam::GetInstance()->FramePosition);
 
 	ofPushStyle();
 	ofSetColor(255);
+	
+		ofPushStyle();
+		ofSetColor(255);
 		ofDrawRectangle(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
+		ofPopStyle();
+
+		ofEnableAlphaBlending();
+		_scene[_stage]->draw();
+		//_dshap_player.draw(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
+		//_hap_player.draw(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
 	ofPopStyle();
 
-	_scene[_stage]->draw();
-
-	ofSetColor(255,255,0);
-	ofDrawCircle(200,200,2000*smoothedVol);
+	//ofPushStyle();
+	//	ofSetColor(255,255,0);
+	//	ofDrawCircle(200,200,2000*smoothedVol);
+	//ofPopStyle();
+	
 
 	ofPopMatrix();
 
@@ -65,7 +88,7 @@ void ofApp::draw(){
 	ofPushStyle();
 	ofSetColor(255,0,0);
 		ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
-		ofDrawBitmapString(_text_wish,10,20);
+		//ofDrawBitmapString(_text_wish,10,20);
 	ofPopStyle();
 #endif
 
@@ -90,8 +113,15 @@ void ofApp::keyReleased(int key){
 //--------------------------------------------------------------
 void ofApp::loadScene(){
 	_scene[0]=new PSceneSleep(this);
-	_scene[1]=new PSceneInput(this);
-	_scene[2]=new PSceneResult(this);
+	_scene[1]=new PSceneHint(this);
+	_scene[2]=new PSceneInput(this);
+	_scene[3]=new PSceneResult(this);
+
+	
+	
+	_dshap_player[0].load("video/A.avi");
+	_dshap_player[1].load("video/A.avi");
+	_dshap_player[2].load("video/A.avi");
 
 }
 void ofApp::onSceneInFinish(int &e){
@@ -117,6 +147,7 @@ void ofApp::setStage(PStage set_){
 		case PSLEEP:
 			break;
 		case PINPUT:
+			_textgroup.reset();
 			break;
 		case PRESULT:
 			break;
@@ -152,8 +183,21 @@ void ofApp::onIdle( ofxLibwebsockets::Event& args ){
 void ofApp::onMessage( ofxLibwebsockets::Event& args ){
     cout<<"[ws] got message: "<<args.message<<endl;
 
-	_text_wish=args.message;
+	string message_=args.message;
+	if(message_=="/home"){
+		prepareStage(PSLEEP);		
+	}else if(message_=="/start"){		
+		prepareStage(PHINT);
+	}else if(message_=="/again"){
+		_textgroup.reset();	
+	}else if(message_.find("/name")!=std::string::npos){		
+		
+		// TODO: parse name & frame
 
+		prepareStage(PRESULT);
+	}else{
+		if(_stage==PINPUT) updateWishText(message_);
+	}
 }
 
 //--------------------------------------------------------------
@@ -185,4 +229,16 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 	
 	//bufferCounter++;
 	
+}
+
+void ofApp::clearWishText(){
+	_textgroup.reset();
+}
+
+void ofApp::updateWishText(string set_){
+	_string_to_update.push_back(set_);
+}
+
+void ofApp::drawWishText(){
+
 }
