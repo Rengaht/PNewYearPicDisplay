@@ -24,7 +24,7 @@ public:
 				_ptr_app->_textgroup.draw();
 				break;
 			case 1:
-				_img_hint.draw(GlobalParam::GetInstance()->FrameSize.x/2-_img_hint.getWidth()/2,ofGetHeight()-MARGIN_BOTTOM-_img_hint.getHeight());
+				_img_hint.draw(GlobalParam::Val()->Hint.x,GlobalParam::Val()->Hint.y,GlobalParam::Val()->Hint.width,GlobalParam::Val()->Hint.height);
 				break;
 			default:
 				break;

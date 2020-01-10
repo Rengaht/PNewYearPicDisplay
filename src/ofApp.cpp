@@ -12,8 +12,7 @@ void ofApp::setup(){
 	
 	//ofSetVerticalSync(true);
     //ofHideCursor();
-	ofLog()<<"FramePosition= "<<GlobalParam::GetInstance()->FramePosition;
-
+	
 	loadScene();
 	_stage_pre=PEMPTY;
 	_stage=PSLEEP;
@@ -57,14 +56,14 @@ void ofApp::draw(){
 	//ofEnableAlphaBlending();
 
 	ofPushMatrix();
-	ofTranslate(GlobalParam::GetInstance()->FramePosition);
+	ofTranslate(GlobalParam::Val()->Screen.getPosition());
 
 	ofPushStyle();
 	ofSetColor(255);
 	
 		ofPushStyle();
 		ofSetColor(255);
-		ofDrawRectangle(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
+		ofDrawRectangle(0,0,GlobalParam::Val()->Screen.width,GlobalParam::Val()->Screen.height);
 		ofPopStyle();
 
 		ofEnableAlphaBlending();
@@ -253,8 +252,8 @@ void ofApp::drawFrameVideo(int index_){
 
 	if(!_dshap_player[index_].isPlaying()) return;
 
-	_dshap_player[index_].draw(GlobalParam::GetInstance()->FrameSize.x/2-_dshap_player[index_].getWidth()*VIDEO_FRAME_RESIZE/2,0,
-		_dshap_player[index_].getWidth()*VIDEO_FRAME_RESIZE,GlobalParam::GetInstance()->FrameSize.y*VIDEO_FRAME_RESIZE);
+	_dshap_player[index_].draw(GlobalParam::Val()->Frame.x,GlobalParam::Val()->Frame.y,
+			GlobalParam::Val()->Frame.width,GlobalParam::Val()->Frame.height);
 				
 }
 void ofApp::startFrameVideo(int index_,int frame_){
@@ -264,13 +263,13 @@ void ofApp::startFrameVideo(int index_,int frame_){
 void ofApp::updateFrameVideo(int index_){
 	_dshap_player[index_].update();
 	cout<<_dshap_player[index_].getCurrentFrame();
-	if(_dshap_player[index_].getCurrentFrame()>=GlobalParam::GetInstance()->FrameLoopEnd[index_]){
-		_dshap_player[index_].setFrame(GlobalParam::GetInstance()->FrameLoopStart[index_]);
+	if(_dshap_player[index_].getCurrentFrame()>=GlobalParam::Val()->FrameLoopEnd[index_]){
+		_dshap_player[index_].setFrame(GlobalParam::Val()->FrameLoopStart[index_]);
 	}
 
 }
 void ofApp::startFrameVideoLoop(int index_){
-	startFrameVideo(index_,GlobalParam::GetInstance()->FrameLoopEnd[index_]);
+	startFrameVideo(index_,GlobalParam::Val()->FrameLoopEnd[index_]);
 
 }
 void ofApp::stopFrameVideo(int index_){

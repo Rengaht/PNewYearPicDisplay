@@ -9,8 +9,8 @@
 #define PTEXT_MCOLUMN 4
 #define PTEXT_MROW 5
 
-#define PTEXT_FONT_SIZE 100
-#define PTEXT_WIDTH 1.2
+#define PTEXT_FONT_SIZE 180
+#define PTEXT_SPACING 1.5
 
 #include "ofMain.h"
 #include "ofxTrueTypeFontUC.h"
@@ -38,7 +38,7 @@ public:
 		//ofSetColor(0);
 
 		ofPushMatrix();
-			ofTranslate(_pos.x*PTEXT_FONT_SIZE*PTEXT_WIDTH,_pos.y*PTEXT_FONT_SIZE*PTEXT_WIDTH);
+			ofTranslate(_pos.x*PTEXT_FONT_SIZE*PTEXT_SPACING,_pos.y*PTEXT_FONT_SIZE*PTEXT_SPACING);
 			Font.drawString(_char,0,0);
 		ofPopMatrix();
 
@@ -103,6 +103,10 @@ public:
 		
 		//wstring wstr_=GlobalParam::utf82ws(set_);
 		int len=wstr_.length();
+		if(len<_text.size()){
+			for(int i=0;i<_text.size()-len;++i) _text.pop_back();
+		}
+
 		for(int i=0;i<len;++i){
 			
 			string char_=GlobalParam::ws2utf8(wstr_.substr(i,1));
@@ -155,10 +159,29 @@ class PTextGroup{
 		}
 		void draw(){
 			ofPushMatrix();
-			ofTranslate(GlobalParam::GetInstance()->FrameSize.x/2-PTEXT_FONT_SIZE*PTEXT_WIDTH*PTEXT_MCOLUMN/2,200);
+			ofTranslate(GlobalParam::Val()->TextFrame.x,GlobalParam::Val()->TextFrame.y);
+			/*ofPushStyle();
+				ofNoFill();
+				ofSetColor(255,0,0);
+				ofDrawRectangle(0,0,GlobalParam::Val()->TextFrame.width,GlobalParam::Val()->TextFrame.height);
+			
+				auto r=getRect();
+				ofSetColor(0,255,0);
+				ofDrawRectangle(0,0,r.width,r.height);
+			ofPopStyle();*/
+
+
+			ofPushMatrix();
+			float scale_=getTextScale();
+			auto r=getRect();
+			ofTranslate(GlobalParam::Val()->TextFrame.width/2-r.width*scale_/2,GlobalParam::Val()->TextFrame.height/2-r.height*scale_/2);
+			
+			ofScale(scale_,scale_);
 
 			if(_text.size()>0)
 				for(auto& v:_text) v.draw();
+
+			ofPopMatrix();
 
 			ofPopMatrix();
 			
@@ -174,12 +197,23 @@ class PTextGroup{
 				else addLine(text_[i]);
 			}
 		}*/
+		float getTextScale(){			
+			
+			auto rect_=getRect();
+
+			return min(GlobalParam::Val()->TextFrame.width/rect_.width,GlobalParam::Val()->TextFrame.height/rect_.height);
+		}
+
 		void updateText(string set_){
 			
 			wstring wstr_=GlobalParam::utf82ws(set_);
 			int len=wstr_.length();
 
+			
 			int mline=ceil((float)len/(float)PTEXT_MCOLUMN);
+			if(mline<_text.size()){
+				for(int i=0;i<_text.size()-mline;++i) _text.pop_back();
+			}
 
 			for(int i=0;i<mline;++i){
 				if(i<getRowCount()) updateLine(i,wstr_.substr(i*PTEXT_MCOLUMN,min(PTEXT_MCOLUMN,len-PTEXT_MCOLUMN*i)));
@@ -194,9 +228,13 @@ class PTextGroup{
 			return _text.size();
 		}
 		ofRectangle getRect(){
+			
+			if(_text.size()<1)  return ofRectangle(0,0,0,0);
 
-			// TODO
-			return ofRectangle(0,0,500,800);
+			float tw=_text[0]._text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING;
+			float th=_text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING;
+			
+			return ofRectangle(0,0,tw,th);
 		}
 		private:
 			void addLine(wstring wstr_){

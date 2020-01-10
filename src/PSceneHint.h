@@ -12,6 +12,8 @@
 class PSceneHint:public PSceneBase{
 	ofImage _img_hint;
 	ofxDSHapVideoPlayer _video;
+	ofRectangle _rect;
+	
 	bool _video_finished;
 
 	FrameTimer _timer_scroll;
@@ -25,6 +27,11 @@ public:
 		_video.load("video/mic_part_0428-0802.avi");
 		_video.setLoopState(OF_LOOP_NORMAL);
 
+		_rect.width=GlobalParam::Val()->Frame.width;
+		_rect.height=GlobalParam::Val()->Frame.height;
+		_rect.x=GlobalParam::Val()->Screen.width/2-_rect.width/2;
+		_rect.y=GlobalParam::Val()->Screen.height/2-_rect.height/2;
+
 		_timer_scroll=FrameTimer(INTERVAL_HINT_SCROLL,INTERVAL_HINT_STAY);
 
 		setup();
@@ -34,8 +41,7 @@ public:
 			case 0:
 				ofPushMatrix();
 				ofTranslate(0,-ofGetHeight()*_timer_scroll.valEaseOut());
-					_video.draw(GlobalParam::GetInstance()->FrameSize.x/2-_video.getWidth()/2,0,
-								_video.getWidth(),GlobalParam::GetInstance()->FrameSize.y);
+					_video.draw(_rect.x,_rect.y,_rect.width,_rect.height);
 				ofPopMatrix();
 				break;
 			default:

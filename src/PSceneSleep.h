@@ -5,6 +5,8 @@
 #define INTERVAL_PIC_STAY 10000
 #define INTERVAL_PIC_SCROLL 2000
 #define SCROLL_MARGIN 200
+#define INTERVAL_BLINK 3000
+
 
 #include "PSceneBase.h"
 
@@ -15,6 +17,7 @@ class PSceneSleep:public PSceneBase{
 	FrameTimer _timer_scroll;
 	bool _flag_next_video;
 
+	FrameTimer _timer_blink;
 	
 public:
 	PSceneSleep(ofApp* set_):PSceneBase(set_){
@@ -24,6 +27,10 @@ public:
 		_img_hint.loadImage("img/hint_start.png");
 
 		_timer_scroll=FrameTimer(INTERVAL_PIC_SCROLL,INTERVAL_PIC_STAY);
+		
+		_timer_blink=FrameTimer(INTERVAL_BLINK);
+		_timer_blink.setContinuous(true);
+		_timer_blink.restart();
 
 		setup();
 	}
@@ -35,24 +42,22 @@ public:
 				ofPushMatrix();
 				ofTranslate(0,-(ofGetHeight())*_timer_out[0].valEaseInOut());
 
-				ofTranslate(0,-(ofGetHeight()+SCROLL_MARGIN)*_timer_scroll.valEaseInOut());
+					ofTranslate(0,-(ofGetHeight()+SCROLL_MARGIN)*_timer_scroll.valEaseInOut());
 						_ptr_app->drawFrameVideo(_index_pic);
-					ofTranslate(0,(ofGetHeight()+SCROLL_MARGIN));
-						if(_index_next!=_index_pic) _ptr_app->drawFrameVideo(_index_next);
-				ofPopMatrix();
 
-				//ofPushStyle();
-				//ofSetColor(255);
-				//	ofDrawRectangle(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
-				//	//_img_back.draw(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
-				//ofPopStyle();
+						ofTranslate(0,(ofGetHeight()+SCROLL_MARGIN));
+							if(_index_next!=_index_pic) _ptr_app->drawFrameVideo(_index_next);
+				ofPopMatrix();
 
 				break;
 			case 1:
-				ofPushMatrix();
-				ofTranslate(0,-(ofGetHeight())*_timer_out[0].valEaseInOut());
-					_img_hint.draw(GlobalParam::GetInstance()->FrameSize.x/2-_img_hint.getWidth()/2,ofGetHeight()-MARGIN_BOTTOM-_img_hint.getHeight());
-				ofPopMatrix();
+				//ofPushMatrix();
+				//ofTranslate(0,-(ofGetHeight())*_timer_out[0].valEaseInOut());
+				ofPushStyle();
+				ofSetColor(255,255*_timer_blink.valFade()*getLayerAlpha(i));
+					_img_hint.draw(GlobalParam::Val()->Hint.x,GlobalParam::Val()->Hint.y,GlobalParam::Val()->Hint.width,GlobalParam::Val()->Hint.height);
+				ofPopStyle();
+					//ofPopMatrix();
 				break;
 			default:
 				break;
@@ -64,6 +69,8 @@ public:
 		if(_index_next!=_index_pic) _ptr_app->updateFrameVideo(_index_next);
 
 		_timer_scroll.update(dt_);
+		_timer_blink.update(dt_);
+
 
 		if(_timer_scroll.pos()>=0 && !_flag_next_video){
 			_flag_next_video=true;
