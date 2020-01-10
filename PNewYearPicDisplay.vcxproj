@@ -400,6 +400,7 @@
     <ClInclude Include="..\..\..\addons\ofxLibwebsockets\libs\openssl\include\openssl\x509_vfy.h" />
     <ClInclude Include="..\..\..\addons\ofxTrueTypeFontUC\src\ofxTrueTypeFontUC.h" />
     <ClInclude Include="src\PStampText.h" />
+    <ClInclude Include="src\PWaveCircle.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

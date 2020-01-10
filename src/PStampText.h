@@ -4,7 +4,7 @@
 
 #define PSTAMP_FONT_SIZE 80
 
-#define STAMP_INTERVAL 1000
+#define STAMP_INTERVAL 800
 #define STAMP_BORDER 8.0
 #define STAMP_SCALE .75
 
@@ -65,7 +65,7 @@ public:
 		ofTranslate(_img.getWidth()/2,_img.getHeight()/2);
 		ofScale(ascale_,ascale_);
 		ofTranslate(-_img.getWidth()/2,-_img.getHeight()/2);
-
+		
 		_img.draw(0,0);
 
 		ofTranslate(STAMP_BORDER,STAMP_BORDER);

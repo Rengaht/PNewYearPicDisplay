@@ -32,6 +32,8 @@ void ofApp::setup(){
 	soundStream.printDeviceList();
 	int bufferSize = 256;
 	soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+
+	ofEnableSmoothing();
 }
 
 //--------------------------------------------------------------
@@ -47,6 +49,11 @@ void ofApp::update(){
 		
 		_textgroup.updateText(_string_to_update.front());
 		_string_to_update.pop_front();
+	}
+
+	if(_stage==PINPUT){
+		_wave_circle.update(dt_);
+		_wave_circle.setAmp(smoothedVol);
 	}
 }
 
@@ -66,7 +73,7 @@ void ofApp::draw(){
 		ofDrawRectangle(0,0,GlobalParam::Val()->Screen.width,GlobalParam::Val()->Screen.height);
 		ofPopStyle();
 
-		ofEnableAlphaBlending();
+		//ofEnableAlphaBlending();
 		_scene[_stage]->draw();
 		//_dshap_player.draw(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
 		//_hap_player.draw(0,0,GlobalParam::GetInstance()->FrameSize.x,GlobalParam::GetInstance()->FrameSize.y);
@@ -77,6 +84,7 @@ void ofApp::draw(){
 	//	ofDrawCircle(200,200,2000*smoothedVol);
 	//ofPopStyle();
 	
+		
 
 	ofPopMatrix();
 
@@ -87,8 +95,8 @@ void ofApp::draw(){
 	ofPushStyle();
 	ofSetColor(255,0,0);
 		ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
-		ofDrawBitmapString(_dshap_player[0].getCurrentFrame(),10,20);
-		//ofDrawBitmapString(_text_wish,10,20);
+		//ofDrawBitmapString(_dshap_player[0].getCurrentFrame(),10,20);
+		ofDrawBitmapString(smoothedVol,10,20);
 	ofPopStyle();
 #endif
 

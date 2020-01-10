@@ -19,6 +19,7 @@ public:
 		switch(i){
 			case 0:
 				// draw wave
+				_ptr_app->_wave_circle.draw();
 
 				// draw text
 				_ptr_app->_textgroup.draw();

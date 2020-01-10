@@ -155,8 +155,8 @@ class PTextGroup{
 	public:
 		
 		PTextGroup(){
-			PCharacter::Font.loadFont("font/font1.otf",PTEXT_FONT_SIZE);
-			PStampText::Font.loadFont("font/font1.otf",PSTAMP_FONT_SIZE);
+			PCharacter::Font.loadFont("font/font2.otf",PTEXT_FONT_SIZE);
+			PStampText::Font.loadFont("font/font2.otf",PSTAMP_FONT_SIZE);
 		}
 		void draw(float alpha_=1.0f){
 			ofPushMatrix();

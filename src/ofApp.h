@@ -13,7 +13,7 @@
 #include "PParameter.h"
 #include "PSceneBase.h"
 #include "PCharacter.h"
-
+#include "PWaveCircle.h"
 
 
 //#include "Websockets.h"
@@ -73,7 +73,8 @@ class ofApp : public ofBaseApp{
 
 		string _user_name;
 		int _frame_type;
-
+		
+		PWaveCircle _wave_circle;
 private:
 		PStage _stage,_stage_pre,_stage_next;
 		PSceneBase* _scene[MSTAGE];
@@ -88,5 +89,7 @@ private:
 		void drawWishText();
 
 		ofxDSHapVideoPlayer _dshap_player[MVIDEO_FRAME];
+
+	
 		
 };
