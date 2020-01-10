@@ -10,7 +10,7 @@
 
 #define MVIDEO_FRAME 3
 #define VIDEO_FRAME_RESIZE 0.9
-
+#define MAX_STAMP_TEXT 10
 
 class GlobalParam{
 
@@ -23,6 +23,8 @@ public:
 	ofRectangle TextFrame,TextOutput;
 
 	vector<int> FrameLoopStart,FrameLoopEnd;
+	vector<vector<int>> StampPattern;
+
 
 	GlobalParam(){
 		readParam();
@@ -73,6 +75,15 @@ public:
 		for(int i=0;i<MVIDEO_FRAME;++i){
 			FrameLoopStart.push_back(_param["Loop"][i]["start"].asInt());
 			FrameLoopEnd.push_back(_param["Loop"][i]["end"].asInt());
+		}
+
+		for(int i=0;i<=MAX_STAMP_TEXT;++i){
+			vector<int> vec_;
+			int len=_param["StampPattern"][ofToString(i)].size();
+			for(int j=0;j<len;++j){
+				vec_.push_back(_param["StampPattern"][ofToString(i)][j].asInt());
+			}
+			StampPattern.push_back(vec_);
 		}
 
 	}

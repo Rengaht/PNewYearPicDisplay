@@ -815,7 +815,7 @@
     <ClInclude Include="src\PSceneHint.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="PStampText.h">
+    <ClInclude Include="src\PStampText.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

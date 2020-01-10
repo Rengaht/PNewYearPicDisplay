@@ -236,7 +236,6 @@
     <ClCompile Include="..\..\..\addons\ofxTrueTypeFontUC\src\ofxTrueTypeFontUC.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PStampText.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\FrameTimer.h" />
     <ClInclude Include="src\PCharacter.h" />
@@ -400,6 +399,7 @@
     <ClInclude Include="..\..\..\addons\ofxLibwebsockets\libs\openssl\include\openssl\x509v3.h" />
     <ClInclude Include="..\..\..\addons\ofxLibwebsockets\libs\openssl\include\openssl\x509_vfy.h" />
     <ClInclude Include="..\..\..\addons\ofxTrueTypeFontUC\src\ofxTrueTypeFontUC.h" />
+    <ClInclude Include="src\PStampText.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

@@ -5,7 +5,7 @@
 #include "PSceneResult.h"
 
 ofxTrueTypeFontUC PCharacter::Font;
-
+ofxTrueTypeFontUC PStampText::Font;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -197,6 +197,8 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 		if(text_.size()>2){		
 			_user_name=text_[1];
 			_frame_type=ofToInt(text_[2]);
+
+			_textgroup.setStampText(_user_name);
 		}
 		prepareStage(PRESULT);
 

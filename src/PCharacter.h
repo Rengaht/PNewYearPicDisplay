@@ -12,10 +12,14 @@
 #define PTEXT_FONT_SIZE 180
 #define PTEXT_SPACING 1.5
 
+#define PTEXT_TILT_ANGLE -5
+
 #include "ofMain.h"
 #include "ofxTrueTypeFontUC.h"
 #include "FrameTimer.h"
 #include "PParameter.h"
+#include "PStampText.h"
+
 class PCharacter{
 public:
 	static ofxTrueTypeFontUC Font;
@@ -96,7 +100,7 @@ public:
 			ofLog()<<"add char "<<char_;
 
 			_text.push_back(PCharacter(char_,p_));
-			p_=getNextPos(p_);
+			p_.x++;
 		}
 	}
 	void udpateText(wstring wstr_){
@@ -114,7 +118,9 @@ public:
 			if(i<_text.size()){
 				_text[i].updateChar(char_);
 			}else{
-				_text.push_back(PCharacter(char_,getNextPos()));
+				ofVec2f pos_=_text.back().getPos();
+				pos_.x++;
+				_text.push_back(PCharacter(char_,pos_));
 			}
 		}
 		
@@ -123,27 +129,18 @@ public:
 
 
 	}
-	ofVec2f getFirstPos(){
-		return (*_text.begin()).getPos();
-	}	
-	ofVec2f getLastPos(){
-		return _text.back().getPos();
-	}
-	ofVec2f getNextPos(){		
-		return getNextPos(_text.back().getPos());
-	}
-	ofVec2f getNextPos(ofVec2f t){
-		if(t.x<PTEXT_MCOLUMN-1){
-			t.x++;
-		}else{
-			t.x=0;
-			t.y++;
-		}
-		return t;
-	}
 
+	float getLastPosX(){
+		return (float)_text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING+getMarginSpace();
+	}
+	float getMarginSpace(){
+		return ((float)PTEXT_MCOLUMN-(float)_text.size())/2*PTEXT_FONT_SIZE*PTEXT_SPACING;
+	}
 	void draw(){
-		for(int i=0;i<_text.size();++i) _text[i].draw();
+		ofPushMatrix();
+		ofTranslate(getMarginSpace(),0);
+			for(int i=0;i<_text.size();++i) _text[i].draw();
+		ofPopMatrix();
 	}
 	void update(float dt_){
 		for(int i=0;i<_text.size();++i) _text[i].update(dt_);
@@ -152,34 +149,46 @@ public:
 };
 
 class PTextGroup{
-	public:
+
 		vector<PTextLine> _text;
+		PStampText _stamp;
+	public:
+		
 		PTextGroup(){
 			PCharacter::Font.loadFont("font/font1.otf",PTEXT_FONT_SIZE);
+			PStampText::Font.loadFont("font/font1.otf",PSTAMP_FONT_SIZE);
 		}
-		void draw(){
+		void draw(float alpha_=1.0f){
 			ofPushMatrix();
 			ofTranslate(GlobalParam::Val()->TextFrame.x,GlobalParam::Val()->TextFrame.y);
-			/*ofPushStyle();
-				ofNoFill();
-				ofSetColor(255,0,0);
-				ofDrawRectangle(0,0,GlobalParam::Val()->TextFrame.width,GlobalParam::Val()->TextFrame.height);
-			
-				auto r=getRect();
-				ofSetColor(0,255,0);
-				ofDrawRectangle(0,0,r.width,r.height);
-			ofPopStyle();*/
-
 
 			ofPushMatrix();
 			float scale_=getTextScale();
 			auto r=getRect();
 			ofTranslate(GlobalParam::Val()->TextFrame.width/2-r.width*scale_/2,GlobalParam::Val()->TextFrame.height/2-r.height*scale_/2);
 			
-			ofScale(scale_,scale_);
+			/* tilt */
+			if(_text.size()<3){
+				ofTranslate(r.width*scale_/2,r.height*scale_/2);
+				ofRotate(PTEXT_TILT_ANGLE);
+				ofTranslate(-r.width*scale_/2,-r.height*scale_/2);
+			}
 
-			if(_text.size()>0)
-				for(auto& v:_text) v.draw();
+
+				ofPushMatrix();
+				ofScale(scale_,scale_);
+					if(_text.size()>0)
+						for(auto& v:_text) v.draw();
+				ofPopMatrix();
+
+				ofPushMatrix();
+				float last_wid=0;
+				if(_text.size()>0) last_wid=_text.back().getLastPosX()*scale_;
+
+
+				ofTranslate(last_wid,r.height*scale_);
+					_stamp.draw(min(20.0f,GlobalParam::Val()->TextFrame.width-120-last_wid),20,alpha_);
+				ofPopMatrix();
 
 			ofPopMatrix();
 
@@ -189,6 +198,8 @@ class PTextGroup{
 		void update(float dt_){
 			if(_text.size()>0)
 				for(auto& v:_text) v.update(dt_);			
+
+			_stamp.update(dt_);
 		}
 		/*void updateText(string set_){
 			auto text_=ofSplitString(set_,"|");
@@ -207,8 +218,7 @@ class PTextGroup{
 		void updateText(string set_){
 			
 			wstring wstr_=GlobalParam::utf82ws(set_);
-			int len=wstr_.length();
-
+			int len=wstr_.length();			
 			
 			int mline=ceil((float)len/(float)PTEXT_MCOLUMN);
 			if(mline<_text.size()){
@@ -223,6 +233,7 @@ class PTextGroup{
 		}
 		void reset(){
 			_text.clear();
+			_stamp.reset();
 		}
 		int getRowCount(){
 			return _text.size();
@@ -231,11 +242,19 @@ class PTextGroup{
 			
 			if(_text.size()<1)  return ofRectangle(0,0,0,0);
 
-			float tw=_text[0]._text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING;
+			float tw=_text[0]._text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING+_text[0].getMarginSpace();
 			float th=_text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING;
 			
 			return ofRectangle(0,0,tw,th);
 		}
+
+		void setStampText(string name_){
+			_stamp.setText(name_);
+		}
+		void restartStamp(){
+			_stamp.restart();
+		}
+
 		private:
 			void addLine(wstring wstr_){
 				
