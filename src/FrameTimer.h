@@ -122,7 +122,7 @@ public:
 	float valFade(){
 
 		float p=val();
-		float seg=8;
+		float seg=3;
 		p*=seg;
 
 		if(p<1) return valEaseIn(p);

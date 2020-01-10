@@ -61,7 +61,7 @@ public:
 		ofPushStyle();
 		ofSetColor(255,255*alpha_);
 
-		float ascale_=ofMap(_timer_in.valEaseOut(),0,1,3,STAMP_SCALE);
+		float ascale_=ofMap(_timer_in.valEaseOut(),0,1,3,STAMP_SCALE,true);
 		ofTranslate(_img.getWidth()/2,_img.getHeight()/2);
 		ofScale(ascale_,ascale_);
 		ofTranslate(-_img.getWidth()/2,-_img.getHeight()/2);

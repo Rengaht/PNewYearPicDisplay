@@ -5,7 +5,7 @@
 #define INTERVAL_PIC_STAY 10000
 #define INTERVAL_PIC_SCROLL 2000
 #define SCROLL_MARGIN 200
-#define INTERVAL_BLINK 3000
+#define INTERVAL_BLINK 2000
 
 
 #include "PSceneBase.h"

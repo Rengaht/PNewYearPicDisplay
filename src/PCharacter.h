@@ -168,6 +168,7 @@ class PTextGroup{
 			ofTranslate(GlobalParam::Val()->TextFrame.width/2-r.width*scale_/2,GlobalParam::Val()->TextFrame.height/2-r.height*scale_/2);
 			
 			/* tilt */
+			ofPushMatrix();
 			if(_text.size()<3){
 				ofTranslate(r.width*scale_/2,r.height*scale_/2);
 				ofRotate(PTEXT_TILT_ANGLE);
@@ -180,6 +181,8 @@ class PTextGroup{
 					if(_text.size()>0)
 						for(auto& v:_text) v.draw();
 				ofPopMatrix();
+			
+			ofPopMatrix();
 
 				ofPushMatrix();
 				float last_wid=0;
