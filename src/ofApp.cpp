@@ -88,6 +88,7 @@ void ofApp::draw(){
 	ofPushStyle();
 	ofSetColor(255,0,0);
 		ofDrawBitmapString(ofToString(ofGetFrameRate()),10,10);
+		ofDrawBitmapString(_dshap_player[0].getCurrentFrame(),10,20);
 		//ofDrawBitmapString(_text_wish,10,20);
 	ofPopStyle();
 #endif
@@ -119,9 +120,9 @@ void ofApp::loadScene(){
 
 	
 	
-	_dshap_player[0].load("video/A.avi");
-	_dshap_player[1].load("video/A.avi");
-	_dshap_player[2].load("video/A.avi");
+	_dshap_player[0].load("video/A_0102-0724.avi");
+	_dshap_player[1].load("video/B_0102-0706.avi");
+	_dshap_player[2].load("video/C_0121-0920.avi");
 
 }
 void ofApp::onSceneInFinish(int &e){
@@ -192,9 +193,14 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 		_textgroup.reset();	
 	}else if(message_.find("/name")!=std::string::npos){		
 		
+		auto text_=ofSplitString(message_,"|");
 		// TODO: parse name & frame
-
+		if(text_.size()>2){		
+			_user_name=text_[1];
+			_frame_type=ofToInt(text_[2]);
+		}
 		prepareStage(PRESULT);
+
 	}else{
 		if(_stage==PINPUT) updateWishText(message_);
 	}
@@ -241,4 +247,32 @@ void ofApp::updateWishText(string set_){
 
 void ofApp::drawWishText(){
 
+}
+
+void ofApp::drawFrameVideo(int index_){
+
+	if(!_dshap_player[index_].isPlaying()) return;
+
+	_dshap_player[index_].draw(GlobalParam::GetInstance()->FrameSize.x/2-_dshap_player[index_].getWidth()*VIDEO_FRAME_RESIZE/2,0,
+		_dshap_player[index_].getWidth()*VIDEO_FRAME_RESIZE,GlobalParam::GetInstance()->FrameSize.y*VIDEO_FRAME_RESIZE);
+				
+}
+void ofApp::startFrameVideo(int index_,int frame_){
+	_dshap_player[index_].setFrame(frame_);
+	_dshap_player[index_].play();
+}
+void ofApp::updateFrameVideo(int index_){
+	_dshap_player[index_].update();
+	cout<<_dshap_player[index_].getCurrentFrame();
+	if(_dshap_player[index_].getCurrentFrame()>=GlobalParam::GetInstance()->FrameLoopEnd[index_]){
+		_dshap_player[index_].setFrame(GlobalParam::GetInstance()->FrameLoopStart[index_]);
+	}
+
+}
+void ofApp::startFrameVideoLoop(int index_){
+	startFrameVideo(index_,GlobalParam::GetInstance()->FrameLoopEnd[index_]);
+
+}
+void ofApp::stopFrameVideo(int index_){
+	_dshap_player[index_].stop();
 }

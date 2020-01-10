@@ -1,6 +1,9 @@
 #pragma once
 
 #define DRAW_DEBUG_INFO
+#define MSTAGE 4
+
+
 
 #include "ofMain.h"
 #include "ofxLibwebsockets.h"
@@ -11,8 +14,7 @@
 #include "PSceneBase.h"
 #include "PCharacter.h"
 
-#define MSTAGE 4
-#define MVIDEO_FRAME 3
+
 
 //#include "Websockets.h"
 //#include <websocketpp/config/asio_no_tls_client.hpp>
@@ -59,11 +61,18 @@ class ofApp : public ofBaseApp{
 
 		//ofxHapPlayer _hap_player;
 		//ofVideoPlayer _video_player;
-		ofxDSHapVideoPlayer _dshap_player[MVIDEO_FRAME];
 		
+		void drawFrameVideo(int index_);
+		void updateFrameVideo(int index_);
+		void startFrameVideo(int index_,int frame_=0);
+		void startFrameVideoLoop(int index_);
+		void stopFrameVideo(int index_);
+
 		list<string> _string_to_update;
 		PTextGroup _textgroup;
 
+		string _user_name;
+		int _frame_type;
 
 private:
 		PStage _stage,_stage_pre,_stage_next;
@@ -78,4 +87,6 @@ private:
 		void updateWishText(string set_);
 		void drawWishText();
 
+		ofxDSHapVideoPlayer _dshap_player[MVIDEO_FRAME];
+		
 };

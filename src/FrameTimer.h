@@ -54,6 +54,9 @@ public:
 
 		return ofClamp(ani_t/due,0,1);
 	}
+	float pos(){
+		return ani_t/due;
+	}
 	float eval(){
 		float v=val();
 		return v*v;
