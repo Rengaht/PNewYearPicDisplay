@@ -47,10 +47,8 @@ public:
 	}
 
 	void draw(){
-
 		_textgroup.draw();
 		drawFrameVideo(_index);
-
 	}
 	void stop(){
 		stopFrameVideo(_index);
@@ -65,6 +63,11 @@ public:
 	int getIndex(){
 		return _index;
 	}
+
+	void drawGif(){
+		_textgroup.drawGif();
+	}
+
 private:
 	int _index;
 	PTextGroup _textgroup;

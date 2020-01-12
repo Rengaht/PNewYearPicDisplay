@@ -13,9 +13,6 @@
     <ClCompile Include="src\ofApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\PSceneBase.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\src\DSUncompressedSampleGrabber.cpp">
       <Filter>addons\ofxDSHapVideoPlayer\src</Filter>
     </ClCompile>
@@ -196,6 +193,9 @@
     <ClCompile Include="..\..\..\addons\ofxTrueTypeFontUC\src\ofxTrueTypeFontUC.cpp">
       <Filter>addons\ofxTrueTypeFontUC\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\PSceneBase.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -321,33 +321,21 @@
     <Filter Include="addons\ofxTrueTypeFontUC\src">
       <UniqueIdentifier>{7E369600-03BF-EEFC-FA92-F38A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\scene">
+      <UniqueIdentifier>{a7253d27-34b0-44cb-b61e-a1eedc4d46f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{a1548503-b41d-4f88-bb15-a338bb93f98c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\elements">
+      <UniqueIdentifier>{447f7534-442b-4c1d-bb86-8926b4116485}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FrameTimer.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\ofApp.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PCharacter.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PParameter.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PSceneBase.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PSceneInput.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PSceneResult.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PSceneSleep.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\src\DSShared.h">
@@ -812,17 +800,41 @@
     <ClInclude Include="..\..\..\addons\ofxTrueTypeFontUC\src\ofxTrueTypeFontUC.h">
       <Filter>addons\ofxTrueTypeFontUC\src</Filter>
     </ClInclude>
+    <ClInclude Include="src\FrameTimer.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PSceneBase.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\PSceneHint.h">
-      <Filter>src</Filter>
+      <Filter>src\scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\PStampText.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\PSceneInput.h">
+      <Filter>src\scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\PWaveCircle.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\PSceneResult.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PSceneSleep.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PParameter.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PCharacter.h">
+      <Filter>src\elements</Filter>
     </ClInclude>
     <ClInclude Include="src\PNewyearPic.h">
-      <Filter>src</Filter>
+      <Filter>src\elements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PStampText.h">
+      <Filter>src\elements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PWaveCircle.h">
+      <Filter>src\elements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PGifRecorder.h">
+      <Filter>src\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -28,6 +28,13 @@ public:
 	string StoreID;
 	int LoadLimitCount;
 
+	int GifSize;
+	int GifFps;
+
+
+	string FFmpegCmd,FFmpegFilter;
+	string GifFolder[MVIDEO_FRAME];
+
 	GlobalParam(){
 		readParam();
 	}
@@ -69,10 +76,10 @@ public:
 		TextFrame.x=Screen.width/2-TextFrame.width/2;
 		TextFrame.y=Frame.y+_param["TextFrame"]["Pos"][1].asFloat();
 
-		TextOutput.width=_param["TextOutput"]["Size"][0].asFloat();
-		TextOutput.height=_param["TextOutput"]["Size"][1].asFloat();
-		TextOutput.x=_param["TextOutput"]["Pos"][0].asFloat();
-		TextOutput.y=_param["TextOutput"]["Pos"][1].asFloat();
+		TextOutput.width=_param["Gif"]["TextSize"][0].asFloat();
+		TextOutput.height=_param["Gif"]["TextSize"][1].asFloat();
+		TextOutput.x=_param["Gif"]["TextPos"][0].asFloat();
+		TextOutput.y=_param["Gif"]["TextPos"][1].asFloat();
 
 		for(int i=0;i<MVIDEO_FRAME;++i){
 			FrameLoopStart.push_back(_param["Loop"][i]["start"].asInt());
@@ -90,6 +97,15 @@ public:
 
 		StoreID=_param["StoreID"].asString();
 		LoadLimitCount=_param["LoadLimitCount"].asInt();
+
+		GifFps=_param["Gif"]["Fps"].asInt();
+		GifSize=_param["Gif"]["Size"].asInt();
+
+		FFmpegCmd=_param["FFmpeg"]["Cmd"].asString();
+		FFmpegFilter=_param["FFmpeg"]["Filter"].asString();
+		for(int i=0;i<MVIDEO_FRAME;++i){
+			GifFolder[i]=_param["Gif"]["Folder"][i].asString();
+		}
 	}
 
 	static string ws2utf8(std::wstring &input){

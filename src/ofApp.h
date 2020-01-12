@@ -15,6 +15,7 @@
 #include "PCharacter.h"
 #include "PWaveCircle.h"
 #include "PNewyearPic.h"
+#include "PGifRecorder.h"
 
 //#include "Websockets.h"
 //#include <websocketpp/config/asio_no_tls_client.hpp>
@@ -69,6 +70,7 @@ class ofApp : public ofBaseApp{
 
 		string _user_name;
 		int _frame_type;
+		string _user_id;
 		
 		PWaveCircle _wave_circle;
 
@@ -83,6 +85,7 @@ class ofApp : public ofBaseApp{
 
 		void sendJandiMessage(string message_);
 
+		
 
 private:
 		PStage _stage,_stage_pre,_stage_next;
@@ -92,10 +95,15 @@ private:
 		void onSceneOutFinish(int &e);
 		void setStage(PStage set_);
 
-		
-		
-		
+		ofFbo _fbo_save;
+		ofImage _img_gif_bgd;
+		void createGifImage();
+		void onGifFinish(string& id_);
+		PGifRecorder _gif_recorder;
 
-	
+
+
+		void uploadImage(string id_);
 		
+	
 };

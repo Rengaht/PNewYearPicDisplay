@@ -37,13 +37,16 @@ public:
 		_timer_circle=FrameTimer(CIRCLE_INTERVAL);
 	
 	}
-	void draw(float dx,float dy,float alpha_=1){
+	void draw(float dx, float dy,float alpha_=1){
+		draw(dx,dy,_timer_circle.valEaseOut(),_timer_in.valEaseOut(),alpha_);
+	}
+	void draw(float dx,float dy,float valcircle_,float valin_,float alpha_=1){
 		
 		
 		if(_text.size()<1) return;
 
 		ofPushStyle();
-		ofSetColor(255,255*alpha_*_timer_circle.valEaseOut());
+		ofSetColor(255,255*alpha_*valcircle_);
 
 			ofPushMatrix();
 			ofTranslate(-20,-20);
@@ -60,11 +63,11 @@ public:
 		ofPushMatrix();
 		ofTranslate(dx,dy);
 		
-		alpha_*=_timer_in.valEaseOut();
+		alpha_*=valin_;
 		ofPushStyle();
 		ofSetColor(255,255*alpha_);
 
-		float ascale_=ofMap(_timer_in.valEaseOut(),0,1,3,STAMP_SCALE,true);
+		float ascale_=ofMap(valin_,0,1,3,STAMP_SCALE,true);
 		ofTranslate(_img.getWidth()/2,_img.getHeight()/2);
 		ofScale(ascale_,ascale_);
 		ofTranslate(-_img.getWidth()/2,-_img.getHeight()/2);

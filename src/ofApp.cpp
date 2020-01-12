@@ -44,6 +44,14 @@ void ofApp::setup(){
 	ofEnableSmoothing();
 
 	loadLatestPic();
+
+	ofAddListener(_gif_recorder.gifFinish,this,&ofApp::onGifFinish);
+	_gif_recorder.startThread();
+
+	//_user_id="test";
+	//_cur_pic=new PNewYearPic("testtesttest","reng",0);
+	//createGifImage();
+
 }
 
 //--------------------------------------------------------------
@@ -101,8 +109,12 @@ void ofApp::draw(){
 
 	ofPopMatrix();
 
-	
-	
+	//_fbo_save.begin();
+	//ofClear(255,0);
+	//	_img_gif_bgd.draw(0,0,GlobalParam::Val()->GifSize,GlobalParam::Val()->GifSize);
+	//	_cur_pic->drawGif();
+	//_fbo_save.end();
+	//_fbo_save.draw(0,0);
 
 #ifdef DRAW_DEBUG_INFO
 	ofPushStyle();
@@ -149,6 +161,8 @@ void ofApp::loadScene(){
 	PStampText::_img.loadImage("img/img-08.png");
 	PStampText::_img_circle.loadImage("img/img-09.png");
 
+	_fbo_save.allocate(GlobalParam::Val()->GifSize,GlobalParam::Val()->GifSize,GL_RGB);
+	_img_gif_bgd.load("gif/bg.png");
 }
 void ofApp::onSceneInFinish(int &e){
 	ofLog()<<"Scene "<<e<<" In finish!";
@@ -184,6 +198,7 @@ void ofApp::setStage(PStage set_){
 			_cur_pic=new PNewYearPic();
 			break;
 		case PRESULT:
+			createGifImage();
 			break;
 	}
 
@@ -231,8 +246,10 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 		if(text_.size()>2){		
 			_user_name=text_[1];
 			_frame_type=ofToInt(text_[2]);
+			_user_id=text_[3];
 
 			_cur_pic->updateNameAndIndex(_user_name,_frame_type);
+			
 		}
 		prepareStage(PRESULT);
 
@@ -296,46 +313,51 @@ void ofApp::urlResponse(ofxHttpResponse &resp_){
         json_.parse(resp_.responseBody);
 		ofLog()<<resp_.responseBody;
 
-		int len=json_["pic"].size();
-		for(int i=0;i<len;++i){
-			_list_pic.push_back(PNewYearPic(json_["pic"][i]["text"].asString(),json_["pic"][i]["name"].asString(),ofToInt(json_["pic"][i]["type"].asString())));
-		}
+		if(json_["action"].asString()=="upload"){
+			if(json_["result"]=="success"){
+				client.send("/upload|"+json_["user_id"].asString());
+			}
 
-		
-		_scene[PSLEEP]->init();
+		}else if(json_["action"].asString()=="load_pic"){
+			int len=json_["pic"].size();
+			for(int i=0;i<len;++i){
+				_list_pic.push_back(PNewYearPic(json_["pic"][i]["text"].asString(),json_["pic"][i]["name"].asString(),ofToInt(json_["pic"][i]["type"].asString())));
+			}
+			_scene[PSLEEP]->init();
+		}
 		
 	}
 
 }
-//void ofApp::clearWishText(){
-//	_textgroup.reset();
-//}
-//
-//void ofApp::updateWishText(string set_){
-//	_string_to_update.push_back(set_);
-//}
-//
-//
-//void ofApp::drawFrameVideo(int index_){
-//
-//	if(!_dshap_player[index_].isPlaying()) return;
-//
-//	_dshap_player[index_].draw(GlobalParam::Val()->Frame.x,GlobalParam::Val()->Frame.y,
-//			GlobalParam::Val()->Frame.width,GlobalParam::Val()->Frame.height);
-//				
-//}
-//void ofApp::startFrameVideo(int index_,int frame_){
-//	_dshap_player[index_].setFrame(frame_);
-//	_dshap_player[index_].play();
-//}
-//void ofApp::updateFrameVideo(int index_){
-//	
-//
-//}
-//void ofApp::startFrameVideoLoop(int index_){
-//	
-//
-//}
-//void ofApp::stopFrameVideo(int index_){
-//	_dshap_player[index_].stop();
-//}
+void ofApp::createGifImage(){
+
+	_fbo_save.begin();
+	ofClear(255,0);
+		_img_gif_bgd.draw(0,0,GlobalParam::Val()->GifSize,GlobalParam::Val()->GifSize);
+		_cur_pic->drawGif();
+	_fbo_save.end();
+	
+	ofPixels pix;
+	_fbo_save.readToPixels(pix);
+	ofSaveImage(pix,"output/"+_user_id+".png");
+	
+	_gif_recorder.setUserId(_user_id,_frame_type);
+}
+void ofApp::onGifFinish(string& id_){
+	ofLog()<<" gif finish "<<id_;
+	uploadImage(id_);
+}
+void ofApp::uploadImage(string id_){
+
+	string filename_="output/"+id_+".gif";
+
+	ofxHttpForm form_;
+    form_.action="https://mmlab.com.tw/project/newyearpic/backend/action.php";
+	form_.method=OFX_HTTP_POST;
+    form_.addFile("file",ofToDataPath(filename_));
+    form_.addFormField("guid", id_);
+	form_.addFormField("action","upload");
+
+	_http_utils.addForm(form_);
+
+}

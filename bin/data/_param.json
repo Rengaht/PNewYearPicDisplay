@@ -1,6 +1,17 @@
 {
 	"StoreID":"TEST",
 	"LoadLimitCount":10,
+	"Gif":{
+		"Size":1200,
+		"Fps":30,
+		"TextPos":[260,151],
+		"TextSize":[680,750],
+		"Folder":["A_GIF","B_GIF","C_GIF"]
+	},
+	"FFmpeg":{
+		"Cmd":"ffmpeg -loglevel panic -y",
+		"Filter":"-filter_complex \"[0][1]overlay,scale=600:-1:flags=lanczos[x];[x][2]paletteuse\""		
+	},
 	"Screen":{
 		"Pos":[660,0],
 		"Size":[600,1080]
@@ -12,11 +23,7 @@
 	"TextFrame":{
 		"Pos":[0,75],
 		"Size":[458,370]
-	},
-	"TextOutput":{
-		"Pos":[260,151],
-		"Size":[680,750]
-	},
+	},	
 	"Hint":{
 		"BottomY":38,
 		"Size":[445,62]

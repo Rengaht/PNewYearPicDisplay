@@ -177,6 +177,45 @@ class PTextGroup{
 
 				ofPushMatrix();
 				ofScale(scale_,scale_);
+					for(int i=0;i<_text.size();++i) _text[i].draw();
+				ofPopMatrix();
+			
+			ofPopMatrix();
+
+				ofPushMatrix();
+				float last_wid=0;
+				if(_text.size()>0) last_wid=_text.back().getLastPosX()*scale_;
+
+
+				ofTranslate(last_wid,r.height*scale_);
+					_stamp.draw(min(20.0f,GlobalParam::Val()->TextFrame.width-120*(float)STAMP_SCALE-last_wid),20,alpha_);
+				ofPopMatrix();
+
+			ofPopMatrix();
+
+			ofPopMatrix();
+			
+		}
+		void drawGif(){
+			ofPushMatrix();
+			ofTranslate(GlobalParam::Val()->TextOutput.x,GlobalParam::Val()->TextOutput.y);
+
+			ofPushMatrix();
+			float scale_=getTextScaleGif();
+			auto r=getRect();
+			ofTranslate(GlobalParam::Val()->TextOutput.width/2-r.width*scale_/2,0);
+			
+			/* tilt */
+			ofPushMatrix();
+			if(_text.size()<3){
+				ofTranslate(r.width*scale_/2,r.height*scale_/2);
+				ofRotate(PTEXT_TILT_ANGLE);
+				ofTranslate(-r.width*scale_/2,-r.height*scale_/2);
+			}
+
+
+				ofPushMatrix();
+				ofScale(scale_,scale_);
 					if(_text.size()>0)
 						for(auto& v:_text) v.draw();
 				ofPopMatrix();
@@ -189,13 +228,12 @@ class PTextGroup{
 
 
 				ofTranslate(last_wid,r.height*scale_);
-					_stamp.draw(min(20.0f,GlobalParam::Val()->TextFrame.width-120-last_wid),20,alpha_);
+					_stamp.draw(min(20.0f,GlobalParam::Val()->TextOutput.width-120-last_wid),20,1,1,1.0);
 				ofPopMatrix();
 
 			ofPopMatrix();
 
 			ofPopMatrix();
-			
 		}
 		void update(float dt_){
 			if(_text.size()>0)
@@ -213,8 +251,11 @@ class PTextGroup{
 		float getTextScale(){			
 			
 			auto rect_=getRect();
-
 			return min(GlobalParam::Val()->TextFrame.width/rect_.width,GlobalParam::Val()->TextFrame.height/rect_.height);
+		}
+		float getTextScaleGif(){
+			auto rect_=getRect();
+			return min(GlobalParam::Val()->TextOutput.width/rect_.width,GlobalParam::Val()->TextOutput.height/rect_.height);
 		}
 
 		void updateText(string set_){
