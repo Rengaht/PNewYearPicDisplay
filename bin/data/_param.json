@@ -1,4 +1,6 @@
 {
+	"StoreID":"TEST",
+	"LoadLimitCount":10,
 	"Screen":{
 		"Pos":[660,0],
 		"Size":[600,1080]

@@ -130,12 +130,41 @@ public:
 		else return 1.0-valEaseIn(p-(seg-1));
 
 	}
+	float valElasticOut(){
+		float t=val();
+		double t2 = (t - 1) * (t - 1);
+		return 1 - t2 * t2 * cos( t * PI * 1.75 );
+	}
+	float valElasticInOut(){
+		float t=val();
+		float a=1.2;
+		float tau=2*PI;
+		float s=asin(1.0/a)*(t/=tau);
+		float p=1;
+		t=t*2-1;
+		return t<0?(a*pow(2,10*t)*sin((s-t)/p)):(2-a*pow(2,-10*t)*sin((s+t)/p)/2);
+
+		/*double t2;
+		if( t < 0.45 ) {
+			t2 = t * t;
+			return 8 * t2 * t2 * sin( t * PI * 9 );
+		} else if( t < 0.55 ) {
+			return 0.5 + 0.75 * sin( t * PI * 4 );
+		} else {
+			t2 = (t - 1) * (t - 1);
+			return 1 - 8 * t2 * t2 * sin( t * PI * 9 );
+		}*/
+	}
+
 	bool isStart(){
 		return started;
 	}
 
 	bool finish(){
 		return ani_t>=due;
+	}
+	void setVal(float set_){
+		ani_t=due*set_;
 	}
 private:
 	float ani_t;

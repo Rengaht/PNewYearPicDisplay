@@ -2,8 +2,8 @@
 #ifndef PSCENE_SLEEP_H
 #define PSCENE_SLEEP_H
 
-#define INTERVAL_PIC_STAY 10000
-#define INTERVAL_PIC_SCROLL 2000
+#define INTERVAL_PIC_STAY 5000
+#define INTERVAL_PIC_SCROLL 1500
 #define SCROLL_MARGIN 200
 #define INTERVAL_BLINK 2000
 
@@ -35,18 +35,24 @@ public:
 		setup();
 	}
 	void drawLayer(int i){
+
+		if(_index_pic<0 || _index_pic>=_ptr_app->_list_pic.size()) return;
+
 		switch(i){
 			case 0:
 
 				// TODO: draw pics
 				ofPushMatrix();
-				ofTranslate(0,-(ofGetHeight())*_timer_out[0].valEaseInOut());
+				ofTranslate(0,-(ofGetHeight())*_timer_out[0].valElasticInOut());
 
-					ofTranslate(0,-(ofGetHeight()+SCROLL_MARGIN)*_timer_scroll.valEaseInOut());
-						_ptr_app->drawFrameVideo(_index_pic);
+					ofTranslate(0,-(ofGetHeight()+SCROLL_MARGIN)*_timer_scroll.valElasticOut());
+						_ptr_app->_list_pic[_index_pic].draw();
 
 						ofTranslate(0,(ofGetHeight()+SCROLL_MARGIN));
-							if(_index_next!=_index_pic) _ptr_app->drawFrameVideo(_index_next);
+							if(_index_next!=_index_pic){
+								//_ptr_app->drawFrameVideo(_index_next);
+								_ptr_app->_list_pic[_index_next].draw();
+							}
 				ofPopMatrix();
 
 				break;
@@ -65,8 +71,13 @@ public:
 	}
 	void update(float dt_){
 		PSceneBase::update(dt_);
-		_ptr_app->updateFrameVideo(_index_pic);
-		if(_index_next!=_index_pic) _ptr_app->updateFrameVideo(_index_next);
+		//_ptr_app->updateFrameVideo(_index_pic);
+
+		if(_index_pic<0 || _index_pic>=_ptr_app->_list_pic.size()) return;
+
+		 _ptr_app->_list_pic[_index_pic].update(dt_);
+		if(_index_next!=_index_pic) //_ptr_app->updateFrameVideo(_index_next);
+			 _ptr_app->_list_pic[_index_next].update(dt_);
 
 		_timer_scroll.update(dt_);
 		_timer_blink.update(dt_);
@@ -74,15 +85,19 @@ public:
 
 		if(_timer_scroll.pos()>=0 && !_flag_next_video){
 			_flag_next_video=true;
-			_ptr_app->startFrameVideoLoop(_index_next);
+			if(_ptr_app->_list_pic[_index_pic].getIndex()!=_ptr_app->_list_pic[_index_next].getIndex())
+				_ptr_app->_list_pic[_index_next].startLoop();
 		}
 
 		if(_timer_scroll.val()==1){
 			
-			_ptr_app->stopFrameVideo(_index_pic);
+			//_ptr_app->stopFrameVideo(_index_pic);
+			if(_ptr_app->_list_pic[_index_pic].getIndex()!=_ptr_app->_list_pic[_index_next].getIndex())
+				_ptr_app->_list_pic[_index_pic].stop();
+			
 			_index_pic=_index_next;
 
-			_index_next=(_index_pic+1)%3;						
+			_index_next=(_index_pic+1)%_ptr_app->_list_pic.size();						
 			_flag_next_video=false;
 			
 			_timer_scroll.restart();			
@@ -92,16 +107,17 @@ public:
 		PSceneBase::init();
 		
 		// TODO: load latest pics
+		if(_ptr_app->_list_pic.size()<1) return;
 
 		_index_pic=0;
-		_index_next=1;
+		_index_next=(_index_pic+1)%_ptr_app->_list_pic.size();
 		
 		// start for loop
 		_flag_next_video=false;
 		_timer_scroll.restart();
 		
-		_ptr_app->startFrameVideoLoop(_index_pic);
-		
+		//_ptr_app->startFrameVideoLoop(_index_pic);
+		_ptr_app->_list_pic[_index_pic].startLoop();
 	}
 
 	void end(){

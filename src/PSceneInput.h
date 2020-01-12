@@ -22,7 +22,7 @@ public:
 				_ptr_app->_wave_circle.draw();
 
 				// draw text
-				_ptr_app->_textgroup.draw();
+				_ptr_app->_cur_pic->draw();
 				break;
 			case 1:
 				_img_hint.draw(GlobalParam::Val()->Hint.x,GlobalParam::Val()->Hint.y,GlobalParam::Val()->Hint.width,GlobalParam::Val()->Hint.height);
@@ -33,7 +33,7 @@ public:
 	}
 	void update(float dt_){
 		PSceneBase::update(dt_);
-		_ptr_app->_textgroup.update(dt_);
+		
 	}
 	void init(){
 		PSceneBase::init();

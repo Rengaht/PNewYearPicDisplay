@@ -26,17 +26,16 @@ class PStampText{
 	float _mgrid;
 	float _grid_width;
 
-	ofImage _img;
-	ofImage _img_circle;
+	
 public:
 	static ofxTrueTypeFontUC Font;
+	static ofImage _img;
+	static ofImage _img_circle;
 
 	PStampText(){
 		_timer_in=FrameTimer(STAMP_INTERVAL,CIRCLE_INTERVAL);
 		_timer_circle=FrameTimer(CIRCLE_INTERVAL);
-
-		_img.loadImage("img/img-08.png");
-		_img_circle.loadImage("img/img-09.png");
+	
 	}
 	void draw(float dx,float dy,float alpha_=1){
 		
@@ -49,6 +48,10 @@ public:
 			ofPushMatrix();
 			ofTranslate(-20,-20);
 				_img_circle.draw(0,0);
+				ofPushStyle();
+				/*ofSetColor(255,0,0);
+					ofDrawCircle(0,0,100);
+				ofPopStyle();*/
 			ofPopMatrix();
 
 		ofPopStyle();
@@ -67,6 +70,11 @@ public:
 		ofTranslate(-_img.getWidth()/2,-_img.getHeight()/2);
 		
 		_img.draw(0,0);
+
+		/*ofPushStyle();
+		ofSetColor(255,255,0);
+			ofDrawCircle(0,0,100);
+		ofPopStyle();*/
 
 		ofTranslate(STAMP_BORDER,STAMP_BORDER);
 		ofPushStyle();
@@ -122,7 +130,10 @@ public:
 		_timer_circle.reset();
 		_text.clear();
 	}
-
+	void setFinish(){
+		_timer_in.setVal(1);
+		_timer_circle.setVal(1);
+	}
 };
 
 #endif

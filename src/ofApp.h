@@ -7,14 +7,14 @@
 
 #include "ofMain.h"
 #include "ofxLibwebsockets.h"
-#include "ofxHapPlayer.h"
-#include "ofxDSHapVideoPlayer.h "
+#include "ofxHttpUtils.h"
+
 
 #include "PParameter.h"
 #include "PSceneBase.h"
 #include "PCharacter.h"
 #include "PWaveCircle.h"
-
+#include "PNewyearPic.h"
 
 //#include "Websockets.h"
 //#include <websocketpp/config/asio_no_tls_client.hpp>
@@ -62,19 +62,28 @@ class ofApp : public ofBaseApp{
 		//ofxHapPlayer _hap_player;
 		//ofVideoPlayer _video_player;
 		
-		void drawFrameVideo(int index_);
-		void updateFrameVideo(int index_);
-		void startFrameVideo(int index_,int frame_=0);
-		void startFrameVideoLoop(int index_);
-		void stopFrameVideo(int index_);
+		
 
 		list<string> _string_to_update;
-		PTextGroup _textgroup;
+		//void updateWishText(string set_);
 
 		string _user_name;
 		int _frame_type;
 		
 		PWaveCircle _wave_circle;
+
+		vector<PNewYearPic> _list_pic;
+		PNewYearPic *_cur_pic;
+
+		ofxHttpUtils _http_utils;
+		void urlResponse(ofxHttpResponse & response);
+
+		void loadLatestPic();
+		void pushCurrentPic();
+
+		void sendJandiMessage(string message_);
+
+
 private:
 		PStage _stage,_stage_pre,_stage_next;
 		PSceneBase* _scene[MSTAGE];
@@ -84,11 +93,8 @@ private:
 		void setStage(PStage set_);
 
 		
-		void clearWishText();
-		void updateWishText(string set_);
-		void drawWishText();
-
-		ofxDSHapVideoPlayer _dshap_player[MVIDEO_FRAME];
+		
+		
 
 	
 		

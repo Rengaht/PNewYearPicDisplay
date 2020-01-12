@@ -25,6 +25,8 @@ public:
 	vector<int> FrameLoopStart,FrameLoopEnd;
 	vector<vector<int>> StampPattern;
 
+	string StoreID;
+	int LoadLimitCount;
 
 	GlobalParam(){
 		readParam();
@@ -86,6 +88,8 @@ public:
 			StampPattern.push_back(vec_);
 		}
 
+		StoreID=_param["StoreID"].asString();
+		LoadLimitCount=_param["LoadLimitCount"].asInt();
 	}
 
 	static string ws2utf8(std::wstring &input){

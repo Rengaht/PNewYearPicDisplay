@@ -239,6 +239,7 @@
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\FrameTimer.h" />
     <ClInclude Include="src\PCharacter.h" />
+    <ClInclude Include="src\PNewyearPic.h" />
     <ClInclude Include="src\PParameter.h" />
     <ClInclude Include="src\PSceneBase.h" />
     <ClInclude Include="src\PSceneHint.h" />

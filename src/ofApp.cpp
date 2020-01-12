@@ -6,6 +6,10 @@
 
 ofxTrueTypeFontUC PCharacter::Font;
 ofxTrueTypeFontUC PStampText::Font;
+ofImage PStampText::_img;
+ofImage PStampText::_img_circle;
+
+ofxDSHapVideoPlayer PNewYearPic::_dshap_player[MVIDEO_FRAME];
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -27,6 +31,10 @@ void ofApp::setup(){
 	client.connect("127.0.0.1",3000);
 	client.addListener(this);
 
+	ofAddListener(_http_utils.newResponseEvent,this,&ofApp::urlResponse);
+    _http_utils.setTimeoutSeconds(60);
+    _http_utils.setMaxRetries(1);
+	_http_utils.start();
 
 	
 	soundStream.printDeviceList();
@@ -34,6 +42,8 @@ void ofApp::setup(){
 	soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 
 	ofEnableSmoothing();
+
+	loadLatestPic();
 }
 
 //--------------------------------------------------------------
@@ -47,7 +57,7 @@ void ofApp::update(){
 	
 	while(_string_to_update.size()>0){
 		
-		_textgroup.updateText(_string_to_update.front());
+		_cur_pic->updateText(_string_to_update.front());
 		_string_to_update.pop_front();
 	}
 
@@ -55,6 +65,9 @@ void ofApp::update(){
 		_wave_circle.update(dt_);
 		_wave_circle.setAmp(smoothedVol);
 	}
+	
+	if(_cur_pic!=NULL) _cur_pic->update(dt_);
+
 }
 
 //--------------------------------------------------------------
@@ -127,9 +140,14 @@ void ofApp::loadScene(){
 
 	
 	
-	_dshap_player[0].load("video/A_0102-0724.avi");
-	_dshap_player[1].load("video/B_0102-0706.avi");
-	_dshap_player[2].load("video/C_0121-0920.avi");
+	PNewYearPic::_dshap_player[0].load("video/A_0102-0724.avi");
+	PNewYearPic::_dshap_player[1].load("video/B_0102-0706.avi");
+	PNewYearPic::_dshap_player[2].load("video/C_0121-0920.avi");
+
+	PCharacter::Font.loadFont("font/font2.otf",PTEXT_FONT_SIZE);
+	PStampText::Font.loadFont("font/font2.otf",PSTAMP_FONT_SIZE);
+	PStampText::_img.loadImage("img/img-08.png");
+	PStampText::_img_circle.loadImage("img/img-09.png");
 
 }
 void ofApp::onSceneInFinish(int &e){
@@ -143,6 +161,13 @@ void ofApp::prepareStage(PStage set_){
 	
 	if(set_==_stage_next) return;
 
+	switch(_stage){
+		case PRESULT:
+			pushCurrentPic();
+			break;		
+	}
+
+
 	ofLog()<<"Preparing for stage "<<set_;
 	_stage_next=set_;
 	if(_stage!=PEMPTY) _scene[_stage]->end();
@@ -155,7 +180,8 @@ void ofApp::setStage(PStage set_){
 		case PSLEEP:
 			break;
 		case PINPUT:
-			_textgroup.reset();
+			//_textgroup.reset();
+			_cur_pic=new PNewYearPic();
 			break;
 		case PRESULT:
 			break;
@@ -197,7 +223,7 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 	}else if(message_=="/start"){		
 		prepareStage(PHINT);
 	}else if(message_=="/again"){
-		_textgroup.reset();	
+		_cur_pic->resetText();
 	}else if(message_.find("/name")!=std::string::npos){		
 		
 		auto text_=ofSplitString(message_,"|");
@@ -206,12 +232,12 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 			_user_name=text_[1];
 			_frame_type=ofToInt(text_[2]);
 
-			_textgroup.setStampText(_user_name);
+			_cur_pic->updateNameAndIndex(_user_name,_frame_type);
 		}
 		prepareStage(PRESULT);
 
 	}else{
-		if(_stage==PINPUT) updateWishText(message_);
+		if(_stage==PINPUT) _cur_pic->updateText(message_);
 	}
 }
 
@@ -245,43 +271,71 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 	//bufferCounter++;
 	
 }
-
-void ofApp::clearWishText(){
-	_textgroup.reset();
+void ofApp::pushCurrentPic(){
+	_list_pic.insert(_list_pic.begin(),*_cur_pic);
 }
 
-void ofApp::updateWishText(string set_){
-	_string_to_update.push_back(set_);
+void ofApp::loadLatestPic(){
+	ofxHttpForm form_;
+    form_.action="https://mmlab.com.tw/project/newyearpic/backend/action.php";
+    form_.method=OFX_HTTP_POST;
+    form_.addFormField("action","load_pic");
+	form_.addFormField("store",GlobalParam::Val()->StoreID);
+    form_.addFormField("limit",ofToString(GlobalParam::Val()->LoadLimitCount));
+
+    _http_utils.addForm(form_);
 }
 
-void ofApp::drawWishText(){
+void ofApp::urlResponse(ofxHttpResponse &resp_){
+	if(resp_.status != 200){
+        ofLog()<<"Requeset error: "<<resp_.reasonForStatus;
+        return;
+    }
+	if(resp_.url.find("mmlab.com.tw")!=-1){
+		ofxJSONElement json_;
+        json_.parse(resp_.responseBody);
+		ofLog()<<resp_.responseBody;
 
-}
+		int len=json_["pic"].size();
+		for(int i=0;i<len;++i){
+			_list_pic.push_back(PNewYearPic(json_["pic"][i]["text"].asString(),json_["pic"][i]["name"].asString(),ofToInt(json_["pic"][i]["type"].asString())));
+		}
 
-void ofApp::drawFrameVideo(int index_){
-
-	if(!_dshap_player[index_].isPlaying()) return;
-
-	_dshap_player[index_].draw(GlobalParam::Val()->Frame.x,GlobalParam::Val()->Frame.y,
-			GlobalParam::Val()->Frame.width,GlobalParam::Val()->Frame.height);
-				
-}
-void ofApp::startFrameVideo(int index_,int frame_){
-	_dshap_player[index_].setFrame(frame_);
-	_dshap_player[index_].play();
-}
-void ofApp::updateFrameVideo(int index_){
-	_dshap_player[index_].update();
-	cout<<_dshap_player[index_].getCurrentFrame();
-	if(_dshap_player[index_].getCurrentFrame()>=GlobalParam::Val()->FrameLoopEnd[index_]){
-		_dshap_player[index_].setFrame(GlobalParam::Val()->FrameLoopStart[index_]);
+		
+		_scene[PSLEEP]->init();
+		
 	}
 
 }
-void ofApp::startFrameVideoLoop(int index_){
-	startFrameVideo(index_,GlobalParam::Val()->FrameLoopEnd[index_]);
-
-}
-void ofApp::stopFrameVideo(int index_){
-	_dshap_player[index_].stop();
-}
+//void ofApp::clearWishText(){
+//	_textgroup.reset();
+//}
+//
+//void ofApp::updateWishText(string set_){
+//	_string_to_update.push_back(set_);
+//}
+//
+//
+//void ofApp::drawFrameVideo(int index_){
+//
+//	if(!_dshap_player[index_].isPlaying()) return;
+//
+//	_dshap_player[index_].draw(GlobalParam::Val()->Frame.x,GlobalParam::Val()->Frame.y,
+//			GlobalParam::Val()->Frame.width,GlobalParam::Val()->Frame.height);
+//				
+//}
+//void ofApp::startFrameVideo(int index_,int frame_){
+//	_dshap_player[index_].setFrame(frame_);
+//	_dshap_player[index_].play();
+//}
+//void ofApp::updateFrameVideo(int index_){
+//	
+//
+//}
+//void ofApp::startFrameVideoLoop(int index_){
+//	
+//
+//}
+//void ofApp::stopFrameVideo(int index_){
+//	_dshap_player[index_].stop();
+//}
