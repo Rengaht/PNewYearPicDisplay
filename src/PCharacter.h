@@ -130,15 +130,15 @@ public:
 
 	}
 
-	float getLastPosX(){
-		return (float)_text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING+getMarginSpace();
+	float getLastPosX(float line_wid){
+		return (float)_text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING+getMarginSpace(line_wid);
 	}
-	float getMarginSpace(){
-		return ((float)PTEXT_MCOLUMN-(float)_text.size())/2*PTEXT_FONT_SIZE*PTEXT_SPACING;
+	float getMarginSpace(float line_wid){
+		return (float)line_wid/2-(float)_text.size()/2*PTEXT_FONT_SIZE*PTEXT_SPACING;
 	}
-	void draw(){
+	void draw(float line_wid){
 		ofPushMatrix();
-		ofTranslate(getMarginSpace(),0);
+		ofTranslate(getMarginSpace(line_wid),0);
 			for(int i=0;i<_text.size();++i) _text[i].draw();
 		ofPopMatrix();
 	}
@@ -155,7 +155,7 @@ class PTextGroup{
 	public:
 		
 		PTextGroup(){
-
+			_reset_next=false;
 		}
 		void draw(float alpha_=1.0f){
 			ofPushMatrix();
@@ -177,18 +177,18 @@ class PTextGroup{
 
 				ofPushMatrix();
 				ofScale(scale_,scale_);
-					for(int i=0;i<_text.size();++i) _text[i].draw();
+					for(int i=0;i<_text.size();++i) _text[i].draw(r.width);
 				ofPopMatrix();
 			
 			ofPopMatrix();
 
 				ofPushMatrix();
 				float last_wid=0;
-				if(_text.size()>0) last_wid=_text.back().getLastPosX()*scale_;
+				if(_text.size()>0) last_wid=_text.back().getLastPosX(r.width)*scale_;
 
 
 				ofTranslate(last_wid,r.height*scale_);
-					_stamp.draw(min(20.0f,GlobalParam::Val()->TextFrame.width-120*(float)STAMP_SCALE-last_wid),20,alpha_);
+					_stamp.draw(min(20.0f,GlobalParam::Val()->TextFrame.width-107*(float)STAMP_SCALE-last_wid),20,alpha_);
 				ofPopMatrix();
 
 			ofPopMatrix();
@@ -217,18 +217,18 @@ class PTextGroup{
 				ofPushMatrix();
 				ofScale(scale_,scale_);
 					if(_text.size()>0)
-						for(auto& v:_text) v.draw();
+						for(auto& v:_text) v.draw(r.width);
 				ofPopMatrix();
 			
 			ofPopMatrix();
 
 				ofPushMatrix();
 				float last_wid=0;
-				if(_text.size()>0) last_wid=_text.back().getLastPosX()*scale_;
+				if(_text.size()>0) last_wid=_text.back().getLastPosX(r.width)*scale_;
 
 
 				ofTranslate(last_wid,r.height*scale_);
-					_stamp.draw(min(20.0f,GlobalParam::Val()->TextOutput.width-120-last_wid),20,1,1,1.0);
+					_stamp.draw(min(20.0f,GlobalParam::Val()->TextOutput.width-107*(float)STAMP_SCALE-last_wid),20,1,1,1.0);
 				ofPopMatrix();
 
 			ofPopMatrix();
@@ -236,6 +236,9 @@ class PTextGroup{
 			ofPopMatrix();
 		}
 		void update(float dt_){
+
+			if(_reset_next) reset();
+
 			if(_text.size()>0)
 				for(auto& v:_text) v.update(dt_);			
 
@@ -275,8 +278,13 @@ class PTextGroup{
 
 		}
 		void reset(){
+			for(auto& p:_text) p._text.clear();
 			_text.clear();
 			_stamp.reset();
+			_reset_next=false;
+		}
+		void resetNext(){
+			_reset_next=true;
 		}
 		int getRowCount(){
 			return _text.size();
@@ -285,7 +293,7 @@ class PTextGroup{
 			
 			if(_text.size()<1)  return ofRectangle(0,0,0,0);
 
-			float tw=_text[0]._text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING+_text[0].getMarginSpace();
+			float tw=_text[0]._text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING;
 			float th=_text.size()*PTEXT_FONT_SIZE*PTEXT_SPACING;
 			
 			return ofRectangle(0,0,tw,th);
@@ -301,7 +309,8 @@ class PTextGroup{
 			_stamp.setFinish();
 		}
 
-		private:
+	private:
+			bool _reset_next;
 			void addLine(wstring wstr_){
 				
 				if(wstr_.length()==0) return;

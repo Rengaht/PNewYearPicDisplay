@@ -93,8 +93,8 @@ public:
 					
 					string char_=GlobalParam::ws2utf8(_text.substr(index_,1));
 					auto r=Font.getStringBoundingBox(char_,0,0);
-					float sx=tw*.98/r.width;
-					float sy=th*.98/r.height;
+					float sx=(tw-STAMP_BORDER*2)/r.width;
+					float sy=(th-STAMP_BORDER*2)/r.height;
 					ofPushMatrix();
 					ofTranslate(tw*i,th*j);
 					ofScale(sx,sy);

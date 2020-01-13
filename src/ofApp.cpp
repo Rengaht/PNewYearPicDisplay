@@ -195,6 +195,7 @@ void ofApp::setStage(PStage set_){
 			break;
 		case PINPUT:
 			//_textgroup.reset();
+			client.send("/input");
 			_cur_pic=new PNewYearPic();
 			break;
 		case PRESULT:
@@ -238,7 +239,9 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
 	}else if(message_=="/start"){		
 		prepareStage(PHINT);
 	}else if(message_=="/again"){
+
 		_cur_pic->resetText();
+		
 	}else if(message_.find("/name")!=std::string::npos){		
 		
 		auto text_=ofSplitString(message_,"|");

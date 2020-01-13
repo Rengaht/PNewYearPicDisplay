@@ -43,7 +43,7 @@ public:
 	}
 
 	void resetText(){
-		_textgroup.reset();	
+		_textgroup.resetNext();	
 	}
 
 	void draw(){
